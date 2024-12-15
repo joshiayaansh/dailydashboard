@@ -52,14 +52,18 @@
 
         async function fetchGeolocation() {
             const res = await fetch(`https://geolocation.googleapis.com/v1/geolocate?key=AIZaSyC-ZOgtuVH6MvmVO8dhEsxLmZSJfukWIc0`, {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
             });
+            if (!res.ok) throw new Error(`Geolocation API failed: ${res.status}`);
             const data = await res.json();
             return { latitude: data.location.lat, longitude: data.location.lng };
         }
 
         async function fetchWeather(latitude, longitude) {
             const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=Bd5e378503939ddaee76f12ad7a97608&units=metric`);
+            if (!res.ok) throw new Error(`Weather API failed: ${res.status}`);
             const data = await res.json();
             const condition = data.weather[0].main.toLowerCase();
             const temp = data.main.temp;
@@ -76,13 +80,15 @@
         }
 
         async function fetchPollen(latitude, longitude) {
-            const res = await fetch(`https://content.googleapis.com/customsearch/v1/pollen?lat=${latitude}&lon=${longitude}&key=AIZaSyCODGzOA60rsqb09aiv09-Vcl6t6Oc20rY`);
+            const res = await fetch(`https://pollen.googleapis.com/v1/pollen?lat=${latitude}&lon=${longitude}&key=AIZaSyCODGzOA60rsqb09aiv09-Vcl6t6Oc20rY`);
+            if (!res.ok) throw new Error(`Pollen API failed: ${res.status}`);
             const data = await res.json();
             return { pollen: data.pollen || 'Unavailable' };
         }
 
         async function fetchAQI(latitude, longitude) {
-            const res = await fetch(`https://content.googleapis.com/customsearch/v1/airquality?lat=${latitude}&lon=${longitude}&key=AIZaSyD3LFHQgUNTI4_INohgF6DPcECXgxzBP5o`);
+            const res = await fetch(`https://airquality.googleapis.com/v1/airquality?lat=${latitude}&lon=${longitude}&key=AIZaSyD3LFHQgUNTI4_INohgF6DPcECXgxzBP5o`);
+            if (!res.ok) throw new Error(`AQI API failed: ${res.status}`);
             const data = await res.json();
             return { aqi: data.aqi || 'Unavailable' };
         }
