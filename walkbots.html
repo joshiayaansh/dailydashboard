@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Daily Dashboard</title>
+    <style>
+        @font-face {
+            font-family: 'Product Sans';
+            src: url('fonts/Product Sans Regular.ttf') format('truetype');
+        }
+
+        body {
+            background-color: black;
+            font-family: 'Product Sans', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .widget {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            background-size: cover;
+        }
+
+        .widget p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Daily Dashboard</h1>
+    <div id="dashboard-widget" class="widget">Loading data...</div>
+
+    <script>
+        const dashboardWidget = document.getElementById('dashboard-widget');
+
+        async function fetchGeolocation() {
+            const res = await fetch(`https://geolocation.googleapis.com/v1/geolocate?key=AIZaSyC-ZOgtuVH6MvmVO8dhEsxLmZSJfukWIc0`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            return { latitude: data.location.lat, longitude: data.location.lng };
+        }
+
+        async function fetchWeather(latitude, longitude) {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=Bd5e378503939ddaee76f12ad7a97608&units=metric`);
+            const data = await res.json();
+            const condition = data.weather[0].main.toLowerCase();
+            const temp = data.main.temp;
+
+            let bgImage = '';
+            if (condition.includes('rain')) bgImage = 'images/rainy_sky.jpg';
+            else if (condition.includes('cloud')) bgImage = 'images/cloudy_sky.jpg';
+            else if (condition.includes('clear')) {
+                const hour = new Date().getHours();
+                bgImage = (hour < 6 || hour > 18) ? 'images/night.jpg' : 'images/sunny_sky.jpg';
+            } else if (condition.includes('mist') || condition.includes('fog')) bgImage = 'images/early_morning.jpg';
+
+            return { temp, condition: data.weather[0].description, bgImage };
+        }
+
+        async function fetchPollen(latitude, longitude) {
+            const res = await fetch(`https://content.googleapis.com/customsearch/v1/pollen?lat=${latitude}&lon=${longitude}&key=AIZaSyCODGzOA60rsqb09aiv09-Vcl6t6Oc20rY`);
+            const data = await res.json();
+            return { pollen: data.pollen || 'Unavailable' };
+        }
+
+        async function fetchAQI(latitude, longitude) {
+            const res = await fetch(`https://content.googleapis.com/customsearch/v1/airquality?lat=${latitude}&lon=${longitude}&key=AIZaSyD3LFHQgUNTI4_INohgF6DPcECXgxzBP5o`);
+            const data = await res.json();
+            return { aqi: data.aqi || 'Unavailable' };
+        }
+
+        async function initializeWidget() {
+            try {
+                const { latitude, longitude } = await fetchGeolocation();
+
+                const weatherData = await fetchWeather(latitude, longitude);
+                const pollenData = await fetchPollen(latitude, longitude);
+                const aqiData = await fetchAQI(latitude, longitude);
+
+                dashboardWidget.style.backgroundImage = `url(${weatherData.bgImage})`;
+                dashboardWidget.innerHTML = `
+                    <p>Temperature: ${weatherData.temp}&#8451;</p>
+                    <p>Condition: ${weatherData.condition}</p>
+                    <p>Pollen: ${pollenData.pollen}</p>
+                    <p>AQI: ${aqiData.aqi}</p>
+                `;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                dashboardWidget.innerHTML = `<p>Failed to load data. Please try again later.</p>`;
+            }
+        }
+
+        initializeWidget();
+    </script>
+</body>
+</html>
