@@ -5,116 +5,136 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>⚠️ Unauthorized Access</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    * {
       margin: 0;
       padding: 0;
-      font-family: 'Arial', sans-serif;
-      color: #fff;
-      background-color: #0a0a0a;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
+      box-sizing: border-box;
     }
 
-    .background {
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #0f0;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Matrix Rain */
+    canvas {
       position: absolute;
       top: 0;
       left: 0;
+      z-index: -10;
+    }
+
+    /* Scanlines */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('https://source.unsplash.com/1600x900/?cyber,technology');
-      background-size: cover;
-      background-position: center;
-      filter: blur(10px) brightness(0.5);
-      z-index: -1;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 0, 0.03),
+        rgba(0, 255, 0, 0.03) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .glitch {
+      color: #0f0;
+      font-size: 2rem;
+      animation: glitch 1.5s infinite;
+      text-align: center;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-2px, -2px); }
+      80% { transform: translate(2px, 2px); }
+      100% { transform: translate(0); }
     }
 
     .content {
-      backdrop-filter: blur(10px) brightness(1.2);
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
       padding: 40px;
-      border-radius: 20px;
+      border: 2px solid lime;
+      border-radius: 15px;
+      box-shadow: 0 0 20px lime;
       text-align: center;
-      z-index: 1;
+      z-index: 5;
       max-width: 700px;
+      animation: flicker 3s infinite alternate;
     }
 
-    .warning-icon {
-      font-size: 3rem;
-      animation: pulse 1.5s infinite;
-      color: #ffcc00;
-      margin-bottom: 20px;
-      text-shadow: 0 0 15px #ffcc00;
-    }
-
-    @keyframes pulse {
-      0% { text-shadow: 0 0 5px #ffcc00; transform: scale(1); }
-      50% { text-shadow: 0 0 20px #ffcc00; transform: scale(1.1); }
-      100% { text-shadow: 0 0 5px #ffcc00; transform: scale(1); }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.9; }
+      100% { opacity: 1; }
     }
 
     h1 {
-      font-size: 3rem;
-      color: #ff4c4c;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+      font-size: 2.5rem;
+      color: red;
+      text-shadow: 0 0 5px red;
     }
 
     p {
+      margin-top: 20px;
       font-size: 1.2rem;
-      line-height: 1.6;
-      margin-bottom: 30px;
-      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.6);
+      line-height: 1.5;
+      color: #fff;
+      text-shadow: 0 0 2px #0f0;
     }
 
     .cta-button {
-      padding: 15px 35px;
-      background-color: #ff3333;
-      color: #fff;
+      margin-top: 30px;
+      padding: 15px 30px;
       font-size: 1.2rem;
       border: none;
-      border-radius: 8px;
-      font-weight: bold;
+      background-color: transparent;
+      color: #fff;
+      border: 2px solid #0f0;
       cursor: pointer;
-      transition: 0.3s ease;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+      animation: pulseGlow 2s infinite;
     }
 
-    .cta-button:hover {
-      background-color: #cc0000;
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px #0f0; }
+      50% { box-shadow: 0 0 20px #0f0; }
+      100% { box-shadow: 0 0 5px #0f0; }
     }
 
-    .warning-label {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #ff6f00;
-      color: white;
-      padding: 10px 25px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      z-index: 2;
-    }
-
-    /* Modal */
     .modal {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      background: rgba(20, 20, 20, 0.95);
-      color: #fff;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid red;
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 0 20px #ff4444;
-      z-index: 999;
+      box-shadow: 0 0 30px red;
+      z-index: 1000;
       transition: transform 0.4s ease;
+      text-align: center;
+      animation: shake 0.5s infinite alternate;
     }
 
     .modal.show {
@@ -122,8 +142,8 @@
     }
 
     .modal h2 {
-      margin-top: 0;
       color: #ff4444;
+      font-size: 1.8rem;
     }
 
     .modal button {
@@ -135,44 +155,70 @@
       font-weight: bold;
       cursor: pointer;
       border-radius: 5px;
+      box-shadow: 0 0 10px #ff4444;
     }
 
-    @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      p { font-size: 1rem; }
-      .cta-button { font-size: 1rem; padding: 12px 25px; }
+    @keyframes shake {
+      0% { transform: translate(-50%, -50%) rotate(-1deg); }
+      100% { transform: translate(-50%, -50%) rotate(1deg); }
     }
   </style>
 </head>
 <body>
 
-  <div class="background"></div>
+<canvas id="matrixCanvas"></canvas>
 
-  <div class="warning-label">⚠️ WARNING: Unauthorized Access</div>
+<div class="content">
+  <div class="glitch">⚠️ UNAUTHORIZED ACCESS DETECTED ⚠️</div>
+  <h1>Halt! This Belongs to Ayaansh Joshi</h1>
+  <p>Any theft of API keys, code, or assets will result in legal action. This is not just a message — it's a shield.</p>
+  <button class="cta-button" onclick="showModal()">Acknowledge</button>
+</div>
 
-  <div class="content">
-    <div class="warning-icon">⚠️</div>
-    <h1>Do Not Use My API Keys or Code</h1>
-    <p>This content belongs to Ayaansh Joshi. Stealing, cloning, or using any of this without permission will trigger a legal response. Think before you click.</p>
-    <button class="cta-button" onclick="showModal()">Acknowledge</button>
-  </div>
+<div class="modal" id="ackModal">
+  <h2>You're Being Watched 👀</h2>
+  <p>This is your only warning. Respect intellectual property or face the consequences.</p>
+  <button onclick="closeModal()">Understood</button>
+</div>
 
-  <!-- Modal -->
-  <div class="modal" id="ackModal">
-    <h2>You're Being Watched 👀</h2>
-    <p>This is your only warning. Close this window and respect intellectual property. 🚨</p>
-    <button onclick="closeModal()">Got it</button>
-  </div>
+<script>
+  function showModal() {
+    document.getElementById('ackModal').classList.add('show');
+  }
 
-  <script>
-    function showModal() {
-      document.getElementById('ackModal').classList.add('show');
+  function closeModal() {
+    document.getElementById('ackModal').classList.remove('show');
+  }
+
+  // Matrix Background Effect
+  const canvas = document.getElementById('matrixCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = '01';
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = Array(Math.floor(columns)).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#0F0';
+    ctx.font = fontSize + 'px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) {
+        drops[i] = 0;
+      }
+      drops[i]++;
     }
+  }
 
-    function closeModal() {
-      document.getElementById('ackModal').classList.remove('show');
-    }
-  </script>
+  setInterval(drawMatrix, 50);
+</script>
 
 </body>
 </html>
